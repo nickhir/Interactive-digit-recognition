@@ -13,7 +13,7 @@ pygame.init()
 WIDTH = 1000
 HEIGHT = 700
 
-DRAW_AREA = pygame.Rect(0, 0, WIDTH / 1.5, HEIGHT)
+DRAW_AREA = pygame.Rect(0, 0, WIDTH / 1.5, 560)
 RESULTS_AREA = pygame.Rect(WIDTH / 1.5, 0, WIDTH / 3, HEIGHT)
 
 BLACK = (0, 0, 0)
@@ -21,6 +21,7 @@ WHITE = (255, 255, 255)
 GREEN = (79, 235, 70)
 RED = (219, 64, 64)
 ORANGE = (209, 152, 61)
+BLUE = (28, 58, 200)
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 screen.fill(BLACK)
@@ -33,6 +34,7 @@ clock = pygame.time.Clock()
 continue_loop = True
 drawing = True
 
+
 model = keras.models.load_model("models/MNIST_conv.h5", compile=False)
 
 
@@ -44,7 +46,7 @@ def draw_text(msg, x, y, color, size, bold=False, italic=False):
 
 def create_snapshot():
     image_string = pygame.image.tostring(drawing_surface, "RGB")
-    image = Image.frombytes("RGB", (int(WIDTH / 1.5), HEIGHT), image_string)
+    image = Image.frombytes("RGB", (int(WIDTH / 1.5), 560), image_string)
     image = cropping(image)
     # we have to resize them because training pictures are that size
     image = image.resize((28, 28))
@@ -85,7 +87,13 @@ def predict_digit(np_image):
     result = str(np.argmax(output[0]))
     confidence = np.max(output[0])
     confidence = round(confidence, 4) * 100
-    return result, confidence
+    return output, result, confidence
+
+
+def prediction_numbers(x, y, distance):
+    for i in range(10):
+        draw_text(f"{i}", x, y + i * distance, WHITE, size=25)
+        pygame.draw.line(screen, WHITE, (710, 60 + i * distance), [710, 80 + i * distance], 5)
 
 
 while continue_loop:
@@ -99,7 +107,8 @@ while continue_loop:
             sys.exit()
 
     # check if left mouse is pressed down, and if in drawing area
-    if pygame.mouse.get_pressed()[0] and drawing and pygame.mouse.get_pos()[0] < (WIDTH / 1.5) - 10:
+    if pygame.mouse.get_pressed()[0] and drawing and pygame.mouse.get_pos()[0] < (WIDTH / 1.5) - 10 and \
+            pygame.mouse.get_pos()[1] < 550:
         pygame.draw.circle(screen, WHITE, pygame.mouse.get_pos(), 10)
 
     # when user presses enter, a snapshot of the drawing area is created and saved
@@ -107,9 +116,14 @@ while continue_loop:
         if event.key == pygame.K_RETURN:
             drawing = False
             np_image = create_snapshot()
-            prediction, confidence = predict_digit(np_image)
-            draw_text(f"{prediction}", 828, 231, RED, size=30, bold=True)
-            draw_text(f"{confidence:.2f} %", 780, 438, GREEN, size=30, bold=True)
+            output, prediction, confidence = predict_digit(np_image)
+
+            # generate prediction bars
+            for i in range(10):
+                pygame.draw.rect(screen, BLUE, pygame.Rect((713, 63 + i * 35), (250*output[0][i], 14)))
+
+            draw_text(f"{prediction}", 828, 460, RED, size=30, bold=True)
+            draw_text(f"{confidence:.2f}%", 783, 555, GREEN, size=30, bold=True)
 
     # when user presses space, display is cleared, and new digits can be drawn:
     if event.type == pygame.KEYDOWN:
@@ -120,14 +134,16 @@ while continue_loop:
 
     # seperate screen in area where you draw the digits and one where the output is displayed
     pygame.draw.line(screen, WHITE, [(WIDTH / 1.5) + 2, 0], [(WIDTH / 1.5) + 2, HEIGHT], 3)
+    pygame.draw.line(screen, WHITE, [0, 563], [(WIDTH / 1.5) + 2, 563], 3)
 
     # generate permanent text
-    draw_text("created by nickhir", x=748, y=60, color=WHITE, size=20, italic=True)
-    draw_text("Prediction", x=758, y=160, color=WHITE, size=30, bold=True)
-    draw_text("Confidence", x=750, y=350, color=WHITE, size=30, bold=True)
-    draw_text("press space to clear screen", x=732, y=590, color=WHITE, size=20)
-    draw_text("press enter to predict", x=753, y=640, color=WHITE, size=20)
+    draw_text("created by nickhir", x=240, y=625, color=WHITE, size=20, italic=True)
+    draw_text("Predictions", x=756, y=5, color=WHITE, size=25, bold=True)
+    draw_text("Ultimate prediction", x=712, y=420, color=WHITE, size=27, bold=True)
+    draw_text("Confidence", x=750, y=515, color=WHITE, size=30, bold=True)
+    draw_text("press space to clear screen", x=732, y=615, color=WHITE, size=20)
+    draw_text("press enter to predict", x=745, y=640, color=WHITE, size=20)
+    prediction_numbers(690, 55, 35)
 
-    clock.tick(2000)
-    pygame.display.update(DRAW_AREA)
-    pygame.display.update(RESULTS_AREA)
+    clock.tick(1000)
+    pygame.display.update()
