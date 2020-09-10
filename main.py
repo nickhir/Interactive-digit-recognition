@@ -1,11 +1,9 @@
 import os
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-
 import pygame
 import sys
 from PIL import Image
-import matplotlib.pyplot as plt
 import numpy as np
 from tensorflow import keras
 
@@ -34,7 +32,6 @@ clock = pygame.time.Clock()
 continue_loop = True
 drawing = True
 
-
 model = keras.models.load_model("models/MNIST_conv.h5", compile=False)
 
 
@@ -50,6 +47,8 @@ def create_snapshot():
     image = cropping(image)
     # we have to resize them because training pictures are that size
     image = image.resize((28, 28))
+    #plt.imshow(image)
+    #plt.show()
     # turn image into an array
     np_image = np.array(image)
     # Each channel of the RGB image has the same value, we only need one, so extract one
@@ -120,7 +119,7 @@ while continue_loop:
 
             # generate prediction bars
             for i in range(10):
-                pygame.draw.rect(screen, BLUE, pygame.Rect((713, 63 + i * 35), (250*output[0][i], 14)))
+                pygame.draw.rect(screen, BLUE, pygame.Rect((713, 63 + i * 35), (250 * output[0][i], 14)))
 
             draw_text(f"{prediction}", 828, 460, RED, size=30, bold=True)
             draw_text(f"{confidence:.2f}%", 783, 555, GREEN, size=30, bold=True)
@@ -144,6 +143,5 @@ while continue_loop:
     draw_text("press space to clear screen", x=732, y=615, color=WHITE, size=20)
     draw_text("press enter to predict", x=745, y=640, color=WHITE, size=20)
     prediction_numbers(690, 55, 35)
-
-    clock.tick(1000)
+    clock.tick(250)
     pygame.display.update()

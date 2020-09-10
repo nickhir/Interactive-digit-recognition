@@ -1,4 +1,5 @@
-tensorflow
+python
 pygame
+tensorflow
 numpy
 pillow
