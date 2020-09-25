@@ -2,7 +2,7 @@
 A small showcase which combines [pygame](https://www.pygame.org/news) and [keras](https://keras.io/) to recognize 
 digitally written digits.
 
-![saus](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "Logo Title Text 1")
+![showcase](showcase.gif "Showcases")
 
 
 ## Installation
