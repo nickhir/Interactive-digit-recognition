@@ -1,6 +1,8 @@
 import os
 
+# suppress unwanted messages
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
 import pygame
 import sys
 from PIL import Image
@@ -26,7 +28,7 @@ screen.fill(BLACK)
 drawing_surface = screen.subsurface(DRAW_AREA)
 results_surface = screen.subsurface(RESULTS_AREA)
 
-pygame.display.set_caption("Number Recognizer")
+pygame.display.set_caption("Digit Recognizer")
 clock = pygame.time.Clock()
 
 continue_loop = True
@@ -45,10 +47,10 @@ def create_snapshot():
     image_string = pygame.image.tostring(drawing_surface, "RGB")
     image = Image.frombytes("RGB", (int(WIDTH / 1.5), 560), image_string)
     image = cropping(image)
+    
     # we have to resize them because training pictures are that size
     image = image.resize((28, 28))
-    #plt.imshow(image)
-    #plt.show()
+
     # turn image into an array
     np_image = np.array(image)
     # Each channel of the RGB image has the same value, we only need one, so extract one
@@ -141,7 +143,7 @@ while continue_loop:
     draw_text("Ultimate prediction", x=712, y=420, color=WHITE, size=27, bold=True)
     draw_text("Confidence", x=750, y=515, color=WHITE, size=30, bold=True)
     draw_text("press space to clear screen", x=732, y=615, color=WHITE, size=20)
-    draw_text("press enter to predict", x=745, y=640, color=WHITE, size=20)
+    draw_text("press enter to predict", x=750, y=640, color=WHITE, size=20)
     prediction_numbers(690, 55, 35)
-    clock.tick(250)
+    clock.tick(100)
     pygame.display.update()

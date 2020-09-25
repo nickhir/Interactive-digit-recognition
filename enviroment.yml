@@ -1,0 +1,11 @@
+name: interactive-digit-recognition
+channels:
+  - defaults
+dependencies:
+  - python=3.7.7
+  - pip=20.0.2
+  - pillow=7.1.2
+  - numpy=1.18.1
+  - pip:
+    - pygame==1.9.4
+    - tensorflow==2.1.0
